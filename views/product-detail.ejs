@@ -28,7 +28,7 @@
 
     <div class="breadcrumb">
         <div class="container">
-            <a href="/">首页</a> &gt; <a href="/products">产品中心</a> &gt; <span><%= product.name %></span>
+            <a href="/" data-i18n="nav_home">首页</a> &gt; <a href="/products" data-i18n="nav_products">产品中心</a> &gt; <span><%= product.name %></span>
         </div>
     </div>
 
@@ -40,26 +40,26 @@
                 </div>
                 <div class="detail-info">
                     <h1><%= product.name %></h1>
-                    <h3>产品特点</h3>
+                    <h3 data-i18n="product_features">产品特点</h3>
                     <ul class="detail-specs">
                         <% specs.forEach(spec => { %>
                         <li><%= spec %></li>
                         <% }) %>
                     </ul>
                     <% if (product.description) { %>
-                    <h3>产品说明</h3>
+                    <h3 data-i18n="product_desc">产品说明</h3>
                     <p style="color:#666;line-height:1.8;"><%= product.description %></p>
                     <% } %>
                     <div class="detail-actions">
-                        <button class="btn btn-primary" onclick="openInquiryModal('<%= product.name %>')">立即询盘</button>
-                        <a href="/products" class="btn btn-secondary" style="background:transparent;color:#1a5276;border:2px solid #1a5276;">返回列表</a>
+                        <button class="btn btn-primary" onclick="openInquiryModal('<%= product.name %>')" data-i18n="inquiry_btn">立即询盘</button>
+                        <a href="/products" class="btn btn-secondary" style="background:transparent;color:#1a5276;border:2px solid #1a5276;" data-i18n="back_list">返回列表</a>
                     </div>
                 </div>
             </div>
 
             <% if (relatedProducts.length > 0) { %>
             <div class="related-products">
-                <h3 class="section-title">相关产品</h3>
+                <h3 class="section-title" data-i18n="related_products">相关产品</h3>
                 <div class="products-grid">
                     <% relatedProducts.forEach(p => { %>
                     <div class="product-card">
@@ -81,38 +81,38 @@
     <div class="modal-overlay" id="inquiryModal">
         <div class="modal">
             <div class="modal-header">
-                <h3>产品询盘</h3>
+                <h3 data-i18n="inquiry_modal_title">产品询盘</h3>
                 <button class="modal-close" onclick="closeInquiryModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <p class="modal-product" id="modalProductName"></p>
                 <form id="inquiryForm">
                     <div class="form-group">
-                        <label>您的姓名 *</label>
+                        <label data-i18n="inquiry_name">您的姓名</label>
                         <input type="text" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label>联系电话 *</label>
+                        <label data-i18n="inquiry_phone">联系电话</label>
                         <input type="tel" name="phone" required>
                     </div>
                     <div class="form-group">
-                        <label>电子邮箱</label>
+                        <label data-i18n="inquiry_email">电子邮箱</label>
                         <input type="email" name="email">
                     </div>
                     <div class="form-group">
-                        <label>公司名称</label>
+                        <label data-i18n="inquiry_company">公司名称</label>
                         <input type="text" name="company">
                     </div>
                     <div class="form-group">
-                        <label>采购数量</label>
-                        <input type="text" name="quantity" placeholder="如：1000只">
+                        <label data-i18n="inquiry_qty">采购数量</label>
+                        <input type="text" name="quantity" data-i18n-placeholder="qty_placeholder" placeholder="如：1000只">
                     </div>
                     <div class="form-group">
-                        <label>留言内容 *</label>
-                        <textarea name="message" rows="3" required placeholder="请描述您的需求..."></textarea>
+                        <label data-i18n="inquiry_message">留言内容</label>
+                        <textarea name="message" rows="3" required data-i18n-placeholder="inquiry_placeholder" placeholder="请描述您的需求..."></textarea>
                     </div>
                     <input type="hidden" name="product_name" id="inquiryProductName">
-                    <button type="submit" class="btn btn-primary">提交询盘</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="inquiry_submit">提交询盘</button>
                 </form>
             </div>
         </div>
@@ -122,7 +122,7 @@
 
     <script>
     function openInquiryModal(productName) {
-        document.getElementById('modalProductName').textContent = '询盘产品：' + productName;
+        document.getElementById('modalProductName').textContent = (currentLang === 'en' ? 'Product: ' : '询盘产品：') + productName;
         document.getElementById('inquiryProductName').value = productName;
         document.getElementById('inquiryModal').classList.add('active');
     }
@@ -144,7 +144,7 @@
             });
             const result = await res.json();
             if (result.success) {
-                alert('提交成功！我们会尽快与您联系。');
+                alert(currentLang === 'en' ? 'Submitted successfully! We will contact you soon.' : '提交成功！我们会尽快与您联系。');
                 closeInquiryModal();
                 this.reset();
             } else {

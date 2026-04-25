@@ -9,12 +9,18 @@
         </div>
         <nav class="nav">
             <ul>
-                <li><a href="/" class="<%= activePage === 'index' ? 'active' : '' %>">首页</a></li>
-                <li><a href="/about" class="<%= activePage === 'about' ? 'active' : '' %>">关于我们</a></li>
-                <li><a href="/products" class="<%= activePage === 'products' ? 'active' : '' %>">产品中心</a></li>
-                <li><a href="/contact" class="<%= activePage === 'contact' ? 'active' : '' %>">联系我们</a></li>
+                <li><a href="/" class="<%= activePage === 'index' ? 'active' : '' %>" data-i18n="nav_home">首页</a></li>
+                <li><a href="/about" class="<%= activePage === 'about' ? 'active' : '' %>" data-i18n="nav_about">关于我们</a></li>
+                <li><a href="/products" class="<%= activePage === 'products' ? 'active' : '' %>" data-i18n="nav_products">产品中心</a></li>
+                <li><a href="/contact" class="<%= activePage === 'contact' ? 'active' : '' %>" data-i18n="nav_contact">联系我们</a></li>
             </ul>
         </nav>
+        <div class="lang-switcher">
+            <select id="langSelector" onchange="setLanguage(this.value)">
+                <option value="zh">中文</option>
+                <option value="en">English</option>
+            </select>
+        </div>
         <div class="mobile-menu" id="mobileMenu">
             <span></span>
             <span></span>

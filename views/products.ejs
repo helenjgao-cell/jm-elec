@@ -9,15 +9,15 @@
     <!-- 页面标题 -->
     <section class="page-header">
         <div class="container">
-            <h2>产品中心</h2>
-            <p>专业电气连接产品，品质保证</p>
+            <h2 data-i18n="products_title">产品中心</h2>
+            <p data-i18n="products_subtitle">专业电气连接产品，品质保证</p>
         </div>
     </section>
 
     <!-- 面包屑 -->
     <div class="breadcrumb">
         <div class="container">
-            <a href="/">首页</a> &gt; <span>产品中心</span>
+            <a href="/" data-i18n="nav_home">首页</a> &gt; <span data-i18n="nav_products">产品中心</span>
         </div>
     </div>
 
@@ -26,12 +26,12 @@
         <div class="container">
             <!-- 产品分类筛选 -->
             <div class="product-filters">
-                <button class="filter-btn <%= category === 'all' ? 'active' : '' %>" data-category="all">全部产品</button>
-                <button class="filter-btn <%= category === 'box' ? 'active' : '' %>" data-category="box">跨境电商盒装</button>
-                <button class="filter-btn <%= category === 'pct' ? 'active' : '' %>" data-category="pct">快速接线端子</button>
-                <button class="filter-btn <%= category === 'pt' ? 'active' : '' %>" data-category="pt">PT导轨系列</button>
-                <button class="filter-btn <%= category === 'aviation' ? 'active' : '' %>" data-category="aviation">防水航空插座</button>
-                <button class="filter-btn <%= category === 'heatshrink' ? 'active' : '' %>" data-category="heatshrink">热缩管中间端子</button>
+                <button class="filter-btn <%= category === 'all' ? 'active' : '' %>" data-category="all" data-i18n="filter_all">全部产品</button>
+                <button class="filter-btn <%= category === 'box' ? 'active' : '' %>" data-category="box" data-i18n="filter_box">跨境电商盒装</button>
+                <button class="filter-btn <%= category === 'pct' ? 'active' : '' %>" data-category="pct" data-i18n="filter_pct">快速接线端子</button>
+                <button class="filter-btn <%= category === 'pt' ? 'active' : '' %>" data-category="pt" data-i18n="filter_pt">PT导轨系列</button>
+                <button class="filter-btn <%= category === 'aviation' ? 'active' : '' %>" data-category="aviation" data-i18n="filter_aviation">防水航空插座</button>
+                <button class="filter-btn <%= category === 'heatshrink' ? 'active' : '' %>" data-category="heatshrink" data-i18n="filter_heatshrink">热缩管中间端子</button>
             </div>
 
             <!-- 产品网格 -->
@@ -53,7 +53,7 @@
                         </div>
                     </a>
                     <div class="product-actions">
-                        <button class="btn-inquiry" data-product="<%= product.name %>" onclick="openInquiryModal('<%= product.name %>')">立即询盘</button>
+                        <button class="btn-inquiry" data-product="<%= product.name %>" onclick="openInquiryModal('<%= product.name %>')" data-i18n="inquiry_btn">立即询盘</button>
                     </div>
                 </div>
                 <% }) %>
@@ -65,9 +65,9 @@
     <section class="content-section bg-light">
         <div class="container">
             <div class="contact-cta" style="text-align: center;">
-                <h3>需要定制产品？</h3>
-                <p>我们支持OEM/ODM定制服务，可根据您的需求开发专属产品</p>
-                <a href="/contact" class="btn btn-primary">联系定制</a>
+                <h3 data-i18n="custom_service">需要定制产品？</h3>
+                <p data-i18n="custom_desc">我们支持OEM/ODM定制服务，可根据您的需求开发专属产品</p>
+                <a href="/contact" class="btn btn-primary" data-i18n="custom_btn">联系定制</a>
             </div>
         </div>
     </section>
@@ -76,38 +76,38 @@
     <div class="modal-overlay" id="inquiryModal">
         <div class="modal">
             <div class="modal-header">
-                <h3>产品询盘</h3>
+                <h3 data-i18n="inquiry_modal_title">产品询盘</h3>
                 <button class="modal-close" onclick="closeInquiryModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <p class="modal-product" id="modalProductName"></p>
                 <form id="inquiryForm">
                     <div class="form-group">
-                        <label>您的姓名 *</label>
+                        <label data-i18n="inquiry_name">您的姓名</label>
                         <input type="text" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label>联系电话 *</label>
+                        <label data-i18n="inquiry_phone">联系电话</label>
                         <input type="tel" name="phone" required>
                     </div>
                     <div class="form-group">
-                        <label>电子邮箱</label>
+                        <label data-i18n="inquiry_email">电子邮箱</label>
                         <input type="email" name="email">
                     </div>
                     <div class="form-group">
-                        <label>公司名称</label>
+                        <label data-i18n="inquiry_company">公司名称</label>
                         <input type="text" name="company">
                     </div>
                     <div class="form-group">
-                        <label>采购数量</label>
-                        <input type="text" name="quantity" placeholder="如：1000只">
+                        <label data-i18n="inquiry_qty">采购数量</label>
+                        <input type="text" name="quantity" data-i18n-placeholder="qty_placeholder" placeholder="如：1000只">
                     </div>
                     <div class="form-group">
-                        <label>留言内容 *</label>
-                        <textarea name="message" rows="3" required placeholder="请描述您的需求..."></textarea>
+                        <label data-i18n="inquiry_message">留言内容</label>
+                        <textarea name="message" rows="3" required data-i18n-placeholder="inquiry_placeholder" placeholder="请描述您的需求..."></textarea>
                     </div>
                     <input type="hidden" name="product_name" id="inquiryProductName">
-                    <button type="submit" class="btn btn-primary">提交询盘</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="inquiry_submit">提交询盘</button>
                 </form>
             </div>
         </div>
@@ -126,7 +126,7 @@
 
     // 询盘弹窗
     function openInquiryModal(productName) {
-        document.getElementById('modalProductName').textContent = '询盘产品：' + productName;
+        document.getElementById('modalProductName').textContent = (currentLang === 'en' ? 'Product: ' : '询盘产品：') + productName;
         document.getElementById('inquiryProductName').value = productName;
         document.getElementById('inquiryModal').classList.add('active');
     }
@@ -150,7 +150,7 @@
             });
             const result = await res.json();
             if (result.success) {
-                alert('提交成功！我们会尽快与您联系。');
+                alert(currentLang === 'en' ? 'Submitted successfully! We will contact you soon.' : '提交成功！我们会尽快与您联系。');
                 closeInquiryModal();
                 this.reset();
             } else {
