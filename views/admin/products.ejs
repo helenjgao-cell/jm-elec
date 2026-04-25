@@ -1,0 +1,163 @@
+<div class="admin-page-header">
+    <h2>产品管理</h2>
+    <button class="btn-primary" onclick="openProductModal()">+ 添加产品</button>
+</div>
+
+<div class="admin-card">
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>图片</th>
+                    <th>名称</th>
+                    <th>分类</th>
+                    <th>排序</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (products.length === 0) { %>
+                <tr><td colspan="6" class="text-center">暂无产品</td></tr>
+                <% } %>
+                <% products.forEach(p => { %>
+                <tr>
+                    <td><%= p.id %></td>
+                    <td><img src="/<%= p.image %>" style="width:60px;height:60px;object-fit:cover;border-radius:5px;"></td>
+                    <td><%= p.name %></td>
+                    <td>
+                        <% const cats = {box:'跨境电商盒装',pct:'快速接线端子',pt:'PT导轨系列',aviation:'防水航空插座',heatshrink:'热缩管中间端子'}; %>
+                        <%= cats[p.category] || p.category %>
+                    </td>
+                    <td><%= p.sort_order %></td>
+                    <td>
+                        <button class="btn-sm" onclick="editProduct(<%= p.id %>)">编辑</button>
+                        <button class="btn-sm btn-danger" onclick="deleteProduct(<%= p.id %>)">删除</button>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 产品弹窗 -->
+<div class="modal-overlay" id="productModal">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <h3 id="modalTitle">添加产品</h3>
+            <button class="modal-close" onclick="closeProductModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="productForm" method="POST" action="/admin/products" enctype="multipart/form-data">
+                <input type="hidden" name="id" id="productId">
+                <input type="hidden" name="existing_image" id="existingImage">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>产品名称 *</label>
+                        <input type="text" name="name" id="productName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>分类 *</label>
+                        <select name="category" id="productCategory" required>
+                            <option value="box">跨境电商盒装</option>
+                            <option value="pct">快速接线端子</option>
+                            <option value="pt">PT导轨系列</option>
+                            <option value="aviation">防水航空插座</option>
+                            <option value="heatshrink">热缩管中间端子</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>规格特点（每行一条）</label>
+                    <textarea name="specs" id="productSpecs" rows="4" placeholder="如：&#10;自由组合拼接设计&#10;多规格可选&#10;快速接线端子"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>产品描述</label>
+                    <textarea name="description" id="productDesc" rows="3"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>产品图片</label>
+                        <input type="file" name="image" id="productImage" accept="image/*">
+                        <div id="imagePreview" style="margin-top:10px;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>排序</label>
+                        <input type="number" name="sort_order" id="productSort" value="0">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const modal = document.getElementById('productModal');
+
+function openProductModal() {
+    document.getElementById('modalTitle').textContent = '添加产品';
+    document.getElementById('productForm').reset();
+    document.getElementById('productId').value = '';
+    document.getElementById('existingImage').value = '';
+    document.getElementById('imagePreview').innerHTML = '';
+    modal.classList.add('active');
+}
+
+function closeProductModal() {
+    modal.classList.remove('active');
+}
+
+modal.addEventListener('click', function(e) {
+    if (e.target === this) closeProductModal();
+});
+
+async function editProduct(id) {
+    const res = await fetch('/admin/products/' + id, { credentials: 'include' });
+    const p = await res.json();
+    if (!p) return alert('产品不存在');
+    
+    document.getElementById('modalTitle').textContent = '编辑产品';
+    document.getElementById('productId').value = p.id;
+    document.getElementById('productName').value = p.name;
+    document.getElementById('productCategory').value = p.category;
+    document.getElementById('productSpecs').value = JSON.parse(p.specs || '[]').join('\n');
+    document.getElementById('productDesc').value = p.description || '';
+    document.getElementById('productSort').value = p.sort_order;
+    document.getElementById('existingImage').value = p.image;
+    document.getElementById('imagePreview').innerHTML = '<img src="/' + p.image + '" style="max-width:150px;max-height:150px;border-radius:5px;">';
+    modal.classList.add('active');
+}
+
+async function deleteProduct(id) {
+    if (!confirm('确定删除此产品？')) return;
+    const res = await fetch('/admin/products/' + id + '/delete', { method: 'POST', credentials: 'include' });
+    const result = await res.json();
+    if (result.success) location.reload();
+}
+
+// 预览上传图片
+document.getElementById('productImage').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('imagePreview').innerHTML = '<img src="' + e.target.result + '" style="max-width:150px;max-height:150px;border-radius:5px;">';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// 提交前把 specs 转为 JSON
+document.getElementById('productForm').addEventListener('submit', function(e) {
+    const specsText = document.getElementById('productSpecs').value;
+    const specsArr = specsText.split('\n').filter(s => s.trim());
+    document.getElementById('productSpecs').value = JSON.stringify(specsArr);
+});
+</script>

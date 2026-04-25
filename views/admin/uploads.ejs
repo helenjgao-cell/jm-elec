@@ -1,0 +1,65 @@
+<div class="admin-page-header">
+    <h2>图片管理</h2>
+    <div>
+        <input type="file" id="uploadInput" accept="image/*" style="display:none;" onchange="doUpload(this)">
+        <button class="btn-primary" onclick="document.getElementById('uploadInput').click()">+ 上传图片</button>
+    </div>
+</div>
+
+<div class="admin-card">
+    <div class="upload-grid">
+        <% files.forEach(file => { %>
+        <div class="upload-item">
+            <img src="<%= file.url %>" alt="<%= file.name %>">
+            <div class="upload-info">
+                <span><%= file.name %></span>
+                <small><%= (file.size / 1024).toFixed(1) %> KB</small>
+            </div>
+            <div class="upload-actions">
+                <button class="btn-sm" onclick="copyUrl('<%= file.url %>')">复制链接</button>
+                <button class="btn-sm btn-danger" onclick="deleteFile('<%= file.name %>')">删除</button>
+            </div>
+        </div>
+        <% }) %>
+    </div>
+    <% if (files.length === 0) { %>
+    <div class="text-center" style="padding:60px 0;color:#999;">
+        <p>暂无上传的图片</p>
+    </div>
+    <% } %>
+</div>
+
+<script>
+async function doUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const res = await fetch('/admin/upload', {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+    });
+    const result = await res.json();
+    if (result.success) {
+        alert('上传成功！');
+        location.reload();
+    } else {
+        alert(result.message || '上传失败');
+    }
+}
+
+function copyUrl(url) {
+    navigator.clipboard.writeText(window.location.origin + url).then(() => {
+        alert('链接已复制');
+    });
+}
+
+async function deleteFile(name) {
+    if (!confirm('确定删除此图片？')) return;
+    const res = await fetch('/admin/uploads/' + encodeURIComponent(name) + '/delete', { method: 'POST', credentials: 'include' });
+    const result = await res.json();
+    if (result.success) location.reload();
+}
+</script>

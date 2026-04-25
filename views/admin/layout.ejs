@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof adminTitle !== 'undefined' ? adminTitle : '管理后台' %> - 精铭电子</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+    <!-- 顶部导航 -->
+    <header class="admin-header">
+        <div class="admin-logo">
+            <span>精铭电子</span>
+            <small>管理后台</small>
+        </div>
+        <div class="admin-user">
+            <span>欢迎，<%= user ? user.username : '管理员' %></span>
+            <a href="/admin/logout" class="btn-logout">退出</a>
+        </div>
+    </header>
+
+    <div class="admin-wrapper">
+        <!-- 侧边菜单 -->
+        <aside class="admin-sidebar">
+            <nav class="admin-menu">
+                <a href="/admin" class="admin-menu-item <%= activeAdminPage === 'dashboard' ? 'active' : '' %>">
+                    <span class="icon">📊</span> 控制台
+                </a>
+                <a href="/admin/inquiries" class="admin-menu-item <%= activeAdminPage === 'inquiries' ? 'active' : '' %>">
+                    <span class="icon">📥</span> 询盘管理
+                </a>
+                <a href="/admin/products" class="admin-menu-item <%= activeAdminPage === 'products' ? 'active' : '' %>">
+                    <span class="icon">📝</span> 产品管理
+                </a>
+                <a href="/admin/uploads" class="admin-menu-item <%= activeAdminPage === 'uploads' ? 'active' : '' %>">
+                    <span class="icon">🖼️</span> 图片管理
+                </a>
+                <a href="/admin/settings" class="admin-menu-item <%= activeAdminPage === 'settings' ? 'active' : '' %>">
+                    <span class="icon">⚙️</span> 网站设置
+                </a>
+                <a href="/" target="_blank" class="admin-menu-item">
+                    <span class="icon">🌐</span> 查看网站
+                </a>
+            </nav>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="admin-main">
+            <%- body %>
+        </main>
+    </div>
+
+    <script>
+    // 简单的确认操作
+    function confirmAction(msg) {
+        return confirm(msg || '确定执行此操作？');
+    }
+    </script>
+</body>
+</html>

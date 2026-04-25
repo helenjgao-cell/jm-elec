@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <%- include('partials/head') %>
+    <style>
+        .product-detail-page { padding: 60px 0; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: start; }
+        .detail-image { background: #f8f9fa; border-radius: 10px; padding: 30px; text-align: center; }
+        .detail-image img { max-width: 100%; max-height: 400px; object-fit: contain; }
+        .detail-info h1 { font-size: 28px; color: #1a5276; margin-bottom: 20px; }
+        .detail-info h3 { font-size: 18px; margin: 20px 0 10px; color: #333; }
+        .detail-specs { list-style: none; margin: 15px 0; }
+        .detail-specs li { padding: 8px 0; border-bottom: 1px dashed #eee; color: #666; }
+        .detail-specs li::before { content: '✓ '; color: #27ae60; font-weight: bold; }
+        .detail-actions { margin-top: 30px; display: flex; gap: 15px; }
+        .detail-actions .btn { padding: 14px 35px; font-size: 16px; }
+        .related-products { margin-top: 60px; }
+        .breadcrumb { background: #f8f9fa; padding: 15px 0; font-size: 14px; }
+        .breadcrumb a { color: #1a5276; text-decoration: none; }
+        .breadcrumb span { color: #666; }
+        @media (max-width: 768px) {
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/nav') %>
+
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="/">首页</a> &gt; <a href="/products">产品中心</a> &gt; <span><%= product.name %></span>
+        </div>
+    </div>
+
+    <section class="product-detail-page">
+        <div class="container">
+            <div class="detail-grid">
+                <div class="detail-image">
+                    <img src="/<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+                </div>
+                <div class="detail-info">
+                    <h1><%= product.name %></h1>
+                    <h3>产品特点</h3>
+                    <ul class="detail-specs">
+                        <% specs.forEach(spec => { %>
+                        <li><%= spec %></li>
+                        <% }) %>
+                    </ul>
+                    <% if (product.description) { %>
+                    <h3>产品说明</h3>
+                    <p style="color:#666;line-height:1.8;"><%= product.description %></p>
+                    <% } %>
+                    <div class="detail-actions">
+                        <button class="btn btn-primary" onclick="openInquiryModal('<%= product.name %>')">立即询盘</button>
+                        <a href="/products" class="btn btn-secondary" style="background:transparent;color:#1a5276;border:2px solid #1a5276;">返回列表</a>
+                    </div>
+                </div>
+            </div>
+
+            <% if (relatedProducts.length > 0) { %>
+            <div class="related-products">
+                <h3 class="section-title">相关产品</h3>
+                <div class="products-grid">
+                    <% relatedProducts.forEach(p => { %>
+                    <div class="product-card">
+                        <a href="/product/<%= p.id %>" class="product-link">
+                            <div class="product-image">
+                                <img src="/<%= p.image %>" alt="<%= p.name %>" class="product-img" loading="lazy">
+                            </div>
+                            <h4><%= p.name %></h4>
+                        </a>
+                    </div>
+                    <% }) %>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </section>
+
+    <!-- 询盘弹窗 -->
+    <div class="modal-overlay" id="inquiryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>产品询盘</h3>
+                <button class="modal-close" onclick="closeInquiryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-product" id="modalProductName"></p>
+                <form id="inquiryForm">
+                    <div class="form-group">
+                        <label>您的姓名 *</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>联系电话 *</label>
+                        <input type="tel" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>电子邮箱</label>
+                        <input type="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label>公司名称</label>
+                        <input type="text" name="company">
+                    </div>
+                    <div class="form-group">
+                        <label>采购数量</label>
+                        <input type="text" name="quantity" placeholder="如：1000只">
+                    </div>
+                    <div class="form-group">
+                        <label>留言内容 *</label>
+                        <textarea name="message" rows="3" required placeholder="请描述您的需求..."></textarea>
+                    </div>
+                    <input type="hidden" name="product_name" id="inquiryProductName">
+                    <button type="submit" class="btn btn-primary">提交询盘</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script>
+    function openInquiryModal(productName) {
+        document.getElementById('modalProductName').textContent = '询盘产品：' + productName;
+        document.getElementById('inquiryProductName').value = productName;
+        document.getElementById('inquiryModal').classList.add('active');
+    }
+    function closeInquiryModal() {
+        document.getElementById('inquiryModal').classList.remove('active');
+    }
+    document.getElementById('inquiryModal').addEventListener('click', function(e) {
+        if (e.target === this) closeInquiryModal();
+    });
+    document.getElementById('inquiryForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+        try {
+            const res = await fetch('/api/inquiry', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if (result.success) {
+                alert('提交成功！我们会尽快与您联系。');
+                closeInquiryModal();
+                this.reset();
+            } else {
+                alert(result.message || '提交失败');
+            }
+        } catch (err) {
+            alert('网络错误，请稍后重试');
+        }
+    });
+    </script>
+</body>
+</html>

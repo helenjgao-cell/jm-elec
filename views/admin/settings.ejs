@@ -1,0 +1,68 @@
+<div class="admin-page-header">
+    <h2>网站设置</h2>
+    <p>修改网站基本信息和联系方式</p>
+</div>
+
+<div class="admin-card">
+    <form method="POST" action="/admin/settings">
+        <div class="form-row">
+            <% const settingsMap = {}; settings.forEach(s => settingsMap[s.key] = s); %>
+            
+            <div class="form-group">
+                <label>公司名称</label>
+                <input type="text" name="company_name" value="<%= settingsMap.company_name ? settingsMap.company_name.value : '' %>">
+            </div>
+            <div class="form-group">
+                <label>公司口号</label>
+                <input type="text" name="company_slogan" value="<%= settingsMap.company_slogan ? settingsMap.company_slogan.value : '' %>">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>联系人</label>
+                <input type="text" name="contact_person" value="<%= settingsMap.contact_person ? settingsMap.contact_person.value : '' %>">
+            </div>
+            <div class="form-group">
+                <label>联系电话</label>
+                <input type="text" name="contact_phone" value="<%= settingsMap.contact_phone ? settingsMap.contact_phone.value : '' %>">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>公司地址</label>
+            <input type="text" name="company_address" value="<%= settingsMap.company_address ? settingsMap.company_address.value : '' %>">
+        </div>
+        
+        <div class="form-group">
+            <label>工作时间</label>
+            <input type="text" name="work_time" value="<%= settingsMap.work_time ? settingsMap.work_time.value : '' %>">
+        </div>
+        
+        <h4 style="margin:25px 0 15px;color:#1a5276;border-bottom:2px solid #eee;padding-bottom:10px;">首页统计数据</h4>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>年销量</label>
+                <input type="text" name="stat_sales" value="<%= settingsMap.stat_sales ? settingsMap.stat_sales.value : '' %>">
+            </div>
+            <div class="form-group">
+                <label>合作客户</label>
+                <input type="text" name="stat_customers" value="<%= settingsMap.stat_customers ? settingsMap.stat_customers.value : '' %>">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>行业经验</label>
+                <input type="text" name="stat_experience" value="<%= settingsMap.stat_experience ? settingsMap.stat_experience.value : '' %>">
+            </div>
+            <div class="form-group">
+                <label>产品规格</label>
+                <input type="text" name="stat_specs" value="<%= settingsMap.stat_specs ? settingsMap.stat_specs.value : '' %>">
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">保存设置</button>
+    </form>
+</div>

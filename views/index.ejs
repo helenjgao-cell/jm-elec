@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <%- include('partials/head') %>
+</head>
+<body>
+    <%- include('partials/nav') %>
+
+    <!-- 轮播 Banner -->
+    <section class="hero-carousel">
+        <div class="carousel-container">
+            <% banners.forEach((banner, index) => { %>
+            <div class="carousel-slide <%= index === 0 ? 'active' : '' %>">
+                <img src="/<%= banner.image %>" alt="Banner <%= index + 1 %>" class="banner-img" loading="lazy">
+            </div>
+            <% }) %>
+        </div>
+        
+        <!-- 轮播控制 -->
+        <button class="carousel-btn carousel-prev" aria-label="上一张"></button>
+        <button class="carousel-btn carousel-next" aria-label="下一张"></button>
+        
+        <div class="carousel-dots">
+            <% banners.forEach((_, index) => { %>
+            <span class="dot <%= index === 0 ? 'active' : '' %>" data-slide="<%= index %>"></span>
+            <% }) %>
+        </div>
+    </section>
+
+    <!-- 特色服务 -->
+    <section class="features">
+        <div class="container">
+            <h3 class="section-title">我们的优势</h3>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🏭</div>
+                    <h4>工厂直销</h4>
+                    <p>源头厂家，品质保证，价格更具竞争力</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h4>质量认证</h4>
+                    <p>通过ISO9001质量管理体系认证，产品符合国际标准</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚚</div>
+                    <h4>快速发货</h4>
+                    <p>月均发货速度2天，库存充足，极速响应</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h4>跨境供应</h4>
+                    <p>支持跨境电商平台，提供定制化包装服务</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 产品展示 -->
+    <section class="products-preview">
+        <div class="container">
+            <h3 class="section-title">热门产品</h3>
+            <div class="products-grid">
+                <% hotProducts.forEach(product => { %>
+                <div class="product-card">
+                    <a href="/product/<%= product.id %>" class="product-link">
+                        <div class="product-image">
+                            <img src="/<%= product.image %>" alt="<%= product.name %>" class="product-img" loading="lazy">
+                        </div>
+                        <h4><%= product.name %></h4>
+                        <% const specs = JSON.parse(product.specs || '[]'); %>
+                        <p class="desc"><%= specs[0] || '' %></p>
+                    </a>
+                </div>
+                <% }) %>
+            </div>
+            <div class="view-all">
+                <a href="/products" class="btn btn-primary">查看全部产品</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 统计数据 -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number"><%= settings.stat_sales || '10万+' %></span>
+                    <span class="stat-label">年销量</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number"><%= settings.stat_customers || '500+' %></span>
+                    <span class="stat-label">合作客户</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number"><%= settings.stat_experience || '20年' %></span>
+                    <span class="stat-label">行业经验</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number"><%= settings.stat_specs || '100+' %></span>
+                    <span class="stat-label">产品规格</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系方式 -->
+    <section class="contact-preview">
+        <div class="container">
+            <h3 class="section-title">联系我们</h3>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h4><%= settings.company_name || '浙江精铭电子科技有限公司' %></h4>
+                    <p><strong>地址：</strong><%= settings.company_address || '浙江省乐清市柳市歧头工业区' %></p>
+                    <p><strong>电话：</strong><%= settings.contact_person || '李先生' %> <%= settings.contact_phone || '13388575831' %></p>
+                    <p><strong>主营：</strong>接线端子、电气连接器、压线钳</p>
+                </div>
+                <div class="contact-cta">
+                    <p>欢迎来电咨询，我们期待与您的合作！</p>
+                    <a href="/contact" class="btn btn-primary">立即咨询</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

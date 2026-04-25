@@ -1,0 +1,111 @@
+<div class="admin-page-header">
+    <h2>询盘管理</h2>
+    <p>管理所有客户询盘信息</p>
+</div>
+
+<div class="admin-card">
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>时间</th>
+                    <th>姓名</th>
+                    <th>电话</th>
+                    <th>产品</th>
+                    <th>数量</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (inquiries.length === 0) { %>
+                <tr><td colspan="8" class="text-center">暂无询盘</td></tr>
+                <% } %>
+                <% inquiries.forEach(item => { %>
+                <tr data-id="<%= item.id %>">
+                    <td><%= item.id %></td>
+                    <td><%= new Date(item.created_at).toLocaleString('zh-CN') %></td>
+                    <td><%= item.name %></td>
+                    <td><%= item.phone %></td>
+                    <td><%= item.product_name || '通用咨询' %></td>
+                    <td><%= item.quantity || '-' %></td>
+                    <td>
+                        <span class="badge <%= item.status === 'pending' ? 'badge-warning' : 'badge-success' %>" onclick="toggleStatus(<%= item.id %>, '<%= item.status %>')" style="cursor:pointer;">
+                            <%= item.status === 'pending' ? '待处理' : '已处理' %>
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn-sm" onclick="viewInquiry(<%= item.id %>)">查看详情</button>
+                        <button class="btn-sm btn-danger" onclick="deleteInquiry(<%= item.id %>)">删除</button>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 询盘详情弹窗 -->
+<div class="modal-overlay" id="inquiryModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>询盘详情</h3>
+            <button class="modal-close" onclick="closeInquiryModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="inquiryModalBody">
+        </div>
+    </div>
+</div>
+
+<script>
+const inquiryData = <%- JSON.stringify(inquiries) %>;
+
+function viewInquiry(id) {
+    const item = inquiryData.find(i => i.id === id);
+    if (!item) return;
+    document.getElementById('inquiryModalBody').innerHTML = `
+        <p><strong>ID：</strong>${item.id}</p>
+        <p><strong>时间：</strong>${new Date(item.created_at).toLocaleString('zh-CN')}</p>
+        <p><strong>姓名：</strong>${item.name}</p>
+        <p><strong>电话：</strong>${item.phone}</p>
+        <p><strong>邮箱：</strong>${item.email || '-'}</p>
+        <p><strong>公司：</strong>${item.company || '-'}</p>
+        <p><strong>产品：</strong>${item.product_name || '通用咨询'}</p>
+        <p><strong>数量：</strong>${item.quantity || '-'}</p>
+        <p><strong>留言：</strong></p>
+        <div style="background:#f8f9fa;padding:12px;border-radius:6px;">${item.message}</div>
+    `;
+    document.getElementById('inquiryModal').classList.add('active');
+}
+
+function closeInquiryModal() {
+    document.getElementById('inquiryModal').classList.remove('active');
+}
+
+document.getElementById('inquiryModal').addEventListener('click', function(e) {
+    if (e.target === this) closeInquiryModal();
+});
+
+async function toggleStatus(id, currentStatus) {
+    const newStatus = currentStatus === 'pending' ? 'done' : 'pending';
+    const res = await fetch('/admin/inquiries/' + id + '/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ status: newStatus })
+    });
+    const result = await res.json();
+    if (result.success) location.reload();
+}
+
+async function deleteInquiry(id) {
+    if (!confirm('确定删除这条询盘？')) return;
+    const res = await fetch('/admin/inquiries/' + id + '/delete', {
+        method: 'POST',
+        credentials: 'include'
+    });
+    const result = await res.json();
+    if (result.success) location.reload();
+}
+</script>

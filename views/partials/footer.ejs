@@ -1,0 +1,49 @@
+<!-- 页脚 -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>浙江精铭电子科技有限公司</h4>
+                <p>精制造 · 铭天下</p>
+                <p>专业接线端子制造商</p>
+            </div>
+            <div class="footer-section">
+                <h4>快速链接</h4>
+                <ul>
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/about">关于我们</a></li>
+                    <li><a href="/products">产品中心</a></li>
+                    <li><a href="/contact">联系我们</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>联系方式</h4>
+                <p>电话：李先生 13388575831</p>
+                <p>地址：乐清市柳市歧头工业区</p>
+                <p>工作时间：周一至周六 8:00 - 18:00</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span id="copyYear"></span> 浙江精铭电子科技有限公司 版权所有</p>
+            <p style="margin-top:5px;font-size:12px;opacity:0.7;">浙ICP备XXXXXXXX号-1</p>
+        </div>
+    </div>
+</footer>
+
+<script src="/js/main.js?v=<%= Date.now() %>"></script>
+<script>
+    // 版权年份自动更新
+    document.getElementById('copyYear').textContent = new Date().getFullYear();
+    
+    // 移动端菜单
+    (function() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        const nav = document.querySelector('.nav');
+        if (mobileMenu) {
+            mobileMenu.addEventListener('click', function() {
+                this.classList.toggle('active');
+                nav.classList.toggle('active');
+            });
+        }
+    })();
+</script>

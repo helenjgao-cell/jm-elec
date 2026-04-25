@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <%- include('partials/head') %>
+</head>
+<body>
+    <%- include('partials/nav') %>
+
+    <!-- 页面标题 -->
+    <section class="page-header">
+        <div class="container">
+            <h2>联系我们</h2>
+            <p>期待与您的合作</p>
+        </div>
+    </section>
+
+    <!-- 面包屑 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="/">首页</a> &gt; <span>联系我们</span>
+        </div>
+    </div>
+
+    <!-- 联系内容 -->
+    <section class="content-section">
+        <div class="container">
+            <div class="contact-section">
+                <!-- 联系表单 -->
+                <div class="contact-form">
+                    <h3>在线留言</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">您的姓名 *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">联系电话 *</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">电子邮箱</label>
+                            <input type="email" id="email" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="company">公司名称</label>
+                            <input type="text" id="company" name="company">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">留言内容 *</label>
+                            <textarea id="message" name="message" placeholder="请描述您的需求，如产品型号、数量、用途等..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">提交留言</button>
+                    </form>
+                </div>
+
+                <!-- 联系信息 -->
+                <div class="contact-details">
+                    <h3>联系方式</h3>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div>
+                            <h4>电话咨询</h4>
+                            <p><%= settings.contact_person || '李先生' %> <%= settings.contact_phone || '13388575831' %></p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div>
+                            <h4>公司地址</h4>
+                            <p><%= settings.company_address || '浙江省乐清市柳市歧头工业区' %></p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">🏭</div>
+                        <div>
+                            <h4>公司名称</h4>
+                            <p><%= settings.company_name || '浙江精铭电子科技有限公司' %></p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">🕐</div>
+                        <div>
+                            <h4>工作时间</h4>
+                            <p><%= settings.work_time || '周一至周六 8:00 - 18:00' %></p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                        <h4 style="color: #1a5276; margin-bottom: 15px;">业务合作</h4>
+                        <p style="margin-bottom: 10px;"><strong>批发采购：</strong>欢迎各大电商平台、贸易公司洽谈合作</p>
+                        <p style="margin-bottom: 10px;"><strong>定制开发：</strong>支持OEM/ODM，可根据需求定制产品</p>
+                        <p><strong>跨境供应：</strong>支持亚马逊、速卖通等跨境电商平台供货</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        // 表单提交处理
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            try {
+                const res = await fetch('/api/inquiry', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    alert('感谢您的留言！我们会尽快与您联系。\n\n如需更快回复，请直接拨打电话：<%= settings.contact_person || "李先生" %> <%= settings.contact_phone || "13388575831" %>');
+                    this.reset();
+                } else {
+                    alert(result.message || '提交失败，请稍后重试');
+                }
+            } catch (err) {
+                alert('网络错误，请稍后重试');
+            }
+        });
+    </script>
+</body>
+</html>
