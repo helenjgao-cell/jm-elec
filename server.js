@@ -102,7 +102,11 @@ app.get('/about', async (req, res) => {
 app.get('/products', async (req, res) => {
     const category = req.query.category || 'all';
     const products = await require('./database').getAllProducts(category);
-    const categories = await require('./database').getAllCategories();
+    const allCategories = await require('./database').getAllCategories();
+    // 只展示有产品的分类
+    const allProducts = await require('./database').getAllProducts();
+    const categoryWithProducts = new Set(allProducts.map(p => p.category));
+    const categories = allCategories.filter(c => categoryWithProducts.has(c.slug));
     res.render('products', {
         layout: false,
         activePage: 'products',
