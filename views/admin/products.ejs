@@ -26,8 +26,8 @@
                     <td><img src="/<%= p.image %>" style="width:60px;height:60px;object-fit:cover;border-radius:5px;"></td>
                     <td><%= p.name %></td>
                     <td>
-                        <% const cats = {box:'跨境电商盒装',pct:'快速接线端子',pt:'PT导轨系列',aviation:'防水航空插座',heatshrink:'热缩管中间端子'}; %>
-                        <%= cats[p.category] || p.category %>
+                        <% const catMap = {}; categories.forEach(c => catMap[c.slug] = c.name); %>
+                        <%= catMap[p.category] || p.category %>
                     </td>
                     <td><%= p.sort_order %></td>
                     <td>
@@ -61,11 +61,9 @@
                     <div class="form-group">
                         <label>分类 *</label>
                         <select name="category" id="productCategory" required>
-                            <option value="box">跨境电商盒装</option>
-                            <option value="pct">快速接线端子</option>
-                            <option value="pt">PT导轨系列</option>
-                            <option value="aviation">防水航空插座</option>
-                            <option value="heatshrink">热缩管中间端子</option>
+                            <% categories.forEach(c => { %>
+                            <option value="<%= c.slug %>"><%= c.name %></option>
+                            <% }) %>
                         </select>
                     </div>
                 </div>

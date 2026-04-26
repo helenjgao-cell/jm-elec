@@ -102,6 +102,7 @@ app.get('/about', async (req, res) => {
 app.get('/products', async (req, res) => {
     const category = req.query.category || 'all';
     const products = await require('./database').getAllProducts(category);
+    const categories = await require('./database').getAllCategories();
     res.render('products', {
         layout: false,
         activePage: 'products',
@@ -109,7 +110,8 @@ app.get('/products', async (req, res) => {
         description: '精铭电子产品中心，提供快速接线端子、LED免焊接端子、导轨式弹簧端子、防水航空插座等全系列产品。',
         keywords: '快速接线端子,LED端子,导轨式端子,防水航空插座,热缩管端子,跨境电商盒装',
         products,
-        category
+        category,
+        categories
     });
 });
 
@@ -249,10 +251,12 @@ app.post('/admin/inquiries/:id/delete', require('./middleware/auth'), async (req
 // 产品管理
 app.get('/admin/products', require('./middleware/auth'), async (req, res) => {
     const products = await require('./database').getAllProducts();
+    const categories = await require('./database').getAllCategories();
     res.render('admin/products', {
         layout: 'admin/layout',
         activeAdminPage: 'products',
-        products
+        products,
+        categories
     });
 });
 
@@ -322,6 +326,52 @@ app.post('/admin/uploads/:name/delete', require('./middleware/auth'), (req, res)
         res.json({ success: true });
     } catch (e) {
         res.status(500).json({ success: false });
+    }
+});
+
+// 分类管理
+app.get('/admin/categories', require('./middleware/auth'), async (req, res) => {
+    const categories = await require('./database').getAllCategories();
+    res.render('admin/categories', {
+        layout: 'admin/layout',
+        activeAdminPage: 'categories',
+        categories
+    });
+});
+
+app.post('/admin/categories', require('./middleware/auth'), async (req, res) => {
+    try {
+        const { name, slug, sort_order, id } = req.body;
+        if (id) {
+            await require('./database').updateCategory(id, { name, slug, sort_order: parseInt(sort_order) || 0 });
+        } else {
+            await require('./database').addCategory({ name, slug, sort_order: parseInt(sort_order) || 0 });
+        }
+        res.redirect('/admin/categories');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('操作失败: ' + err.message);
+    }
+});
+
+app.get('/admin/categories/:id', require('./middleware/auth'), async (req, res) => {
+    const category = await require('./database').getCategoryBySlug(req.params.id);
+    // 如果按slug找不到，尝试按id找
+    if (!category && !isNaN(req.params.id)) {
+        const cats = await require('./database').getAllCategories();
+        const found = cats.find(c => c.id == req.params.id);
+        return res.json(found || null);
+    }
+    res.json(category);
+});
+
+app.post('/admin/categories/:id/delete', require('./middleware/auth'), async (req, res) => {
+    try {
+        await require('./database').deleteCategory(req.params.id);
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: err.message });
     }
 });
 

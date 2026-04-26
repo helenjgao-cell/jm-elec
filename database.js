@@ -54,6 +54,15 @@ function initDatabase() {
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
 
+        // 分类表
+        db.run(`CREATE TABLE IF NOT EXISTS categories (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            slug TEXT UNIQUE NOT NULL,
+            sort_order INTEGER DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+
         // 管理员表
         db.run(`CREATE TABLE IF NOT EXISTS admins (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,6 +78,14 @@ function initDatabase() {
             if (err) return console.error(err);
             if (row.count === 0) {
                 seedData();
+            }
+        });
+
+        // 检查是否已有分类数据
+        db.get("SELECT COUNT(*) as count FROM categories", (err, row) => {
+            if (err) return console.error(err);
+            if (row.count === 0) {
+                seedCategories();
             }
         });
     });
@@ -165,8 +182,93 @@ function seedData() {
     console.log('数据库初始化完成');
 }
 
+// 初始化默认分类
+function seedCategories() {
+    const categories = [
+        {name: '跨境电商盒装', slug: 'box', sort_order: 1},
+        {name: '快速接线端子', slug: 'pct', sort_order: 2},
+        {name: 'PT导轨系列', slug: 'pt', sort_order: 3},
+        {name: '固定面板快速接线端子', slug: 'panel', sort_order: 4},
+        {name: '防水航空插座', slug: 'aviation', sort_order: 5},
+        {name: '热缩管中间端子', slug: 'heatshrink', sort_order: 6},
+        {name: '空中对接快速接线端子', slug: 'air', sort_order: 7},
+        {name: '贯通式大电流端子', slug: 'through', sort_order: 8},
+        {name: '免破线快速接线端子', slug: 'wire-free', sort_order: 9},
+        {name: '暗盒修复器', slug: 'box-repair', sort_order: 10},
+        {name: '冷压端子+套盒', slug: 'crimp-box', sort_order: 11},
+        {name: '弹簧式PT导轨端子', slug: 'spring-pt', sort_order: 12},
+        {name: '冷压端子系列', slug: 'crimp', sort_order: 13},
+        {name: '暗盒修复器系列', slug: 'box-repair-series', sort_order: 14},
+        {name: '压线帽系列', slug: 'wire-cap', sort_order: 15},
+        {name: '拔插式PCB端子', slug: 'pcb-plug', sort_order: 16},
+        {name: '螺钉式PCB端子', slug: 'pcb-screw', sort_order: 17},
+        {name: '栅栏式PCB端子', slug: 'pcb-fence', sort_order: 18},
+        {name: '免螺丝式PCB端子', slug: 'pcb-spring', sort_order: 19},
+        {name: '大电流螺钉式端子', slug: 'high-current', sort_order: 20},
+        {name: '手柄式快速接线端子', slug: 'handle', sort_order: 21},
+        {name: 'MCS免螺丝接线端子', slug: 'mcs', sort_order: 22},
+        {name: '未分类', slug: 'uncategorized', sort_order: 99},
+    ];
+    const stmt = db.prepare(`INSERT INTO categories (name, slug, sort_order) VALUES (?, ?, ?)`);
+    categories.forEach(c => stmt.run(c.name, c.slug, c.sort_order));
+    stmt.finalize();
+    console.log('默认分类初始化完成');
+}
+
 // 数据库操作方法
 const dbMethods = {
+    // 分类相关
+    getAllCategories: () => {
+        return new Promise((resolve, reject) => {
+            db.all('SELECT * FROM categories ORDER BY sort_order, id', [], (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    },
+    getCategoryBySlug: (slug) => {
+        return new Promise((resolve, reject) => {
+            db.get('SELECT * FROM categories WHERE slug = ?', [slug], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+    },
+    addCategory: (category) => {
+        return new Promise((resolve, reject) => {
+            const {name, slug, sort_order} = category;
+            db.run(
+                'INSERT INTO categories (name, slug, sort_order) VALUES (?, ?, ?)',
+                [name, slug, sort_order || 0],
+                function(err) {
+                    if (err) reject(err);
+                    else resolve(this.lastID);
+                }
+            );
+        });
+    },
+    updateCategory: (id, category) => {
+        return new Promise((resolve, reject) => {
+            const {name, slug, sort_order} = category;
+            db.run(
+                'UPDATE categories SET name = ?, slug = ?, sort_order = ? WHERE id = ?',
+                [name, slug, sort_order, id],
+                function(err) {
+                    if (err) reject(err);
+                    else resolve(this.changes);
+                }
+            );
+        });
+    },
+    deleteCategory: (id) => {
+        return new Promise((resolve, reject) => {
+            db.run('DELETE FROM categories WHERE id = ?', [id], function(err) {
+                if (err) reject(err);
+                else resolve(this.changes);
+            });
+        });
+    },
+
     // 产品相关
     getAllProducts: (category) => {
         return new Promise((resolve, reject) => {

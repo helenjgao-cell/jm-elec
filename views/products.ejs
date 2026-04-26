@@ -27,11 +27,9 @@
             <!-- 产品分类筛选 -->
             <div class="product-filters">
                 <button class="filter-btn <%= category === 'all' ? 'active' : '' %>" data-category="all" data-i18n="filter_all">全部产品</button>
-                <button class="filter-btn <%= category === 'box' ? 'active' : '' %>" data-category="box" data-i18n="filter_box">跨境电商盒装</button>
-                <button class="filter-btn <%= category === 'pct' ? 'active' : '' %>" data-category="pct" data-i18n="filter_pct">快速接线端子</button>
-                <button class="filter-btn <%= category === 'pt' ? 'active' : '' %>" data-category="pt" data-i18n="filter_pt">PT导轨系列</button>
-                <button class="filter-btn <%= category === 'aviation' ? 'active' : '' %>" data-category="aviation" data-i18n="filter_aviation">防水航空插座</button>
-                <button class="filter-btn <%= category === 'heatshrink' ? 'active' : '' %>" data-category="heatshrink" data-i18n="filter_heatshrink">热缩管中间端子</button>
+                <% categories.forEach(c => { %>
+                <button class="filter-btn <%= category === c.slug ? 'active' : '' %>" data-category="<%= c.slug %>" data-i18n="filter_<%= c.slug.replace(/-/g, '_') %>"><%= c.name %></button>
+                <% }) %>
             </div>
 
             <!-- 产品网格 -->

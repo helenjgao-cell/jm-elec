@@ -1,0 +1,110 @@
+<div class="admin-page-header">
+    <h2>产品分类管理</h2>
+    <button class="btn-primary" onclick="openCategoryModal()">+ 添加分类</button>
+</div>
+
+<div class="admin-card">
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>分类名称</th>
+                    <th>标识(slug)</th>
+                    <th>排序</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (categories.length === 0) { %>
+                <tr><td colspan="5" class="text-center">暂无分类</td></tr>
+                <% } %>
+                <% categories.forEach(c => { %>
+                <tr>
+                    <td><%= c.id %></td>
+                    <td><%= c.name %></td>
+                    <td><code><%= c.slug %></code></td>
+                    <td><%= c.sort_order %></td>
+                    <td>
+                        <button class="btn-sm" onclick="editCategory(<%= c.id %>, '<%= c.name %>', '<%= c.slug %>', <%= c.sort_order %>)">编辑</button>
+                        <button class="btn-sm btn-danger" onclick="deleteCategory(<%= c.id %>, '<%= c.name %>')">删除</button>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 分类弹窗 -->
+<div class="modal-overlay" id="categoryModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">添加分类</h3>
+            <button class="modal-close" onclick="closeCategoryModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="categoryForm" method="POST" action="/admin/categories">
+                <input type="hidden" name="id" id="categoryId">
+                
+                <div class="form-group">
+                    <label>分类名称 *</label>
+                    <input type="text" name="name" id="categoryName" required placeholder="如：快速接线端子">
+                </div>
+                
+                <div class="form-group">
+                    <label>标识(slug) *</label>
+                    <input type="text" name="slug" id="categorySlug" required placeholder="如：quick-connector">
+                    <small style="color:#888;">用于URL和数据库关联，只能包含字母、数字、横线</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>排序</label>
+                    <input type="number" name="sort_order" id="categorySort" value="0">
+                    <small style="color:#888;">数字越小越靠前</small>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const modal = document.getElementById('categoryModal');
+
+function openCategoryModal() {
+    document.getElementById('modalTitle').textContent = '添加分类';
+    document.getElementById('categoryForm').reset();
+    document.getElementById('categoryId').value = '';
+    modal.classList.add('active');
+}
+
+function closeCategoryModal() {
+    modal.classList.remove('active');
+}
+
+modal.addEventListener('click', function(e) {
+    if (e.target === this) closeCategoryModal();
+});
+
+function editCategory(id, name, slug, sort) {
+    document.getElementById('modalTitle').textContent = '编辑分类';
+    document.getElementById('categoryId').value = id;
+    document.getElementById('categoryName').value = name;
+    document.getElementById('categorySlug').value = slug;
+    document.getElementById('categorySort').value = sort;
+    modal.classList.add('active');
+}
+
+async function deleteCategory(id, name) {
+    if (!confirm('确定删除分类「' + name + '」？\n注意：删除后该分类下的产品将变为未分类。')) return;
+    const res = await fetch('/admin/categories/' + id + '/delete', { 
+        method: 'POST', 
+        credentials: 'include' 
+    });
+    const result = await res.json();
+    if (result.success) location.reload();
+    else alert(result.message || '删除失败');
+}
+</script>
